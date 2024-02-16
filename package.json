@@ -1,7 +1,7 @@
 {
   "name": "express-backend-template",
-  "version": "1.0.0",
-  "description": "A template for backend development.",
+  "version": "0.1.0",
+  "description": "A template for express mongodb backend development.",
   "main": "dist/app.js",
   "scripts": {
     "dev": "concurrently -k \"tsc --watch\" \"nodemon .\"",
