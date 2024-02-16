@@ -47,6 +47,7 @@ const userSchema = new mongoose.Schema(
             data: Buffer,
             contentType: String,
         },
+        // Add anything else u want
     }
 )
 

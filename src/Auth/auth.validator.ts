@@ -1,5 +1,4 @@
 import { check } from 'express-validator'
-import { Request, Response } from 'express'
 
 const registerValidator = [
     check('email', 'Email is required').isEmail(),
@@ -16,7 +15,5 @@ const loginValidator = [
 const preRegisterValidator = [
     check('email', 'Email is required').isEmail().not().isEmpty().escape().trim(),
 ]
-
-
 
 export { registerValidator, loginValidator, preRegisterValidator}

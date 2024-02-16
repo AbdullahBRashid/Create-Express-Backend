@@ -2,7 +2,8 @@ import { Response, Request } from "express";
 import jwt from "jsonwebtoken";
 import User from "../Users/user.model";
 
-export function authentiateToken(req: any, res: Response, next: Function) {
+
+export async function authentiateToken(req: Request, res: Response, next: Function) {
     let token = req.header('Authorization')
 
     if (!token) {
@@ -21,9 +22,9 @@ export function authentiateToken(req: any, res: Response, next: Function) {
                     message: 'User not found'
                 })
             }
-        req.user = decoded
-        next()
-    })
+            req.user = decoded
+            next()
+        })
     } catch (error) {
         return res.status(400).json({
             message: 'Invalid token'
