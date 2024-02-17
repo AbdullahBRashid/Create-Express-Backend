@@ -4,122 +4,103 @@ import fs from 'fs';
 import path from 'path';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
-import { render } from './utils/template';
 import shell from 'shelljs';
 
-const CHOICES = fs.readdirSync(path.join(__dirname, 'templates'));
+const templates = fs.readdirSync(path.join(__dirname, './templates'));
 
-const QUESTIONS = [
-    {
-        name: 'name',
-        type: 'input',
-        message: 'Please input a new project name:'
-    },
-    {
-        name: 'template',
-        type: 'list',
-        message: 'What template would you like to use?',
-        choices: CHOICES
-    },
-];
-
-export interface CliOptions {
-    projectName: string
-    templateName: string
-    templatePath: string
-    tartgetPath: string
-}
-
-const CURR_DIR = process.cwd();
-
-let isUpdate: Boolean = false;
-
-let options: CliOptions;
-
-inquirer.prompt(QUESTIONS).then(answers => {
-    const projectChoice = answers['template'];
-    const projectName = answers['name'];
-    //@ts-ignore
-    const templatePath = path.join(__dirname, 'templates', projectChoice);
-    //@ts-ignore
-    const tartgetPath = path.join(CURR_DIR, projectName);
-
-    options = {
-        // @ts-ignore
-        projectName,
-        //@ts-ignore
-        templateName: projectChoice,
-        templatePath,
-        tartgetPath
-    }
-
-    createProject(tartgetPath);
-
-    //@ts-ignore
-    createDirectoryContents(templatePath, projectName);
-
-    postProcess(options);
-});
-
-function createProject(projectPath: string) {
-    if (fs.existsSync(projectPath)) {
-        console.log(chalk.yellowBright('Updating the project..'));
-        isUpdate = true;
-    } else if (!fs.existsSync(projectPath)) {
-        console.log(chalk.yellowBright('Creating the project..'));
-        fs.mkdirSync(projectPath);
+function copy(src: string, dest: string) {
+    if (fs.lstatSync(src).isDirectory()) {
+        fs.mkdirSync(dest);
+        for (const file of fs.readdirSync(src)) {
+            copy(path.join(src, file), path.join(dest, file));
+        }
+    } else {
+        fs.copyFileSync(src, dest);
     }
 }
 
-const SKIP_FILES = ['node_modules', '.template.json'];
+inquirer
+    .prompt([
+        {
+            type: 'input',
+            name: 'project_name',
+            message: "What's your project named?",
+            default: function () {
+                return 'my-backend'
+            },
+            validate: function (value) {
+                // Current directory check
+                if (value === ".") return true;
 
-function createDirectoryContents(templatePath: string, projectName: string) {
-    // read all files/folders (1 level) from template folder
-    const filesToCreate = fs.readdirSync(templatePath);
-    // loop each file/folder
-    filesToCreate.forEach(file => {
-        const origFilePath = path.join(templatePath, file);
-
-        // get stats about the current file
-        const stats = fs.statSync(origFilePath);
-
-        // skip files that should not be copied
-        if (SKIP_FILES.indexOf(file) > -1) return;
-
-        if (stats.isFile()) {
-            // read file content and transform it using template engine
-            let contents = fs.readFileSync(origFilePath, 'utf8');
-            contents = render(contents, {projectName});
-            // write file to destination folder
-            const writePath = path.join(CURR_DIR, projectName, file);
-            fs.writeFileSync(writePath, contents, 'utf8');
-        } else if (stats.isDirectory()) {
-            if (!fs.existsSync(path.join(CURR_DIR, projectName, file))) {
-                // create folder in destination folder
-                fs.mkdirSync(path.join(CURR_DIR, projectName, file));
+                var pass = value.match(
+                    /^[a-zA-Z0-9-_]+$/
+                );
+                if (!pass) {
+                    return 'Please enter a valid project name';
+                }
+                // Check if Folder Already exists and not empty
+                if (fs.existsSync(value) && (fs.readdirSync(value).length > 0)) {
+                    return 'The project folder already exists. Please choose a different name.';
+                }
+                return true;
             }
-            // copy files/folder inside current folder recursively
-            createDirectoryContents(path.join(templatePath, file), path.join(projectName, file));
+        },
+        {
+            type: 'input',
+            name: 'description',
+            message: "What's your project about?",
+            default: function () {
+                return 'A simple backend project'
+            }
+        },
+        {
+            type: 'input',
+            name: 'author',
+            message: "What's your name?",
+            default: function () {
+                return 'John Doe'
+            }
+        },
+        {
+            type: 'confirm',
+            name: 'is_private',
+            message: 'Is this project private?',
+            default: false
+        },
+        {
+            type: 'list',
+            name: 'template',
+            message: 'What Template do you want to use?',
+            choices: templates
+        }
+    ])
+    .then(({ project_name, description, author, is_private, template }: { project_name: string, description: string, author: string, is_private: boolean, template: string }) => {
+        console.log(`Creating a new Backend Project in ${project_name}`);
+
+        // Make a new directory with the project name if not already exists
+        if (!fs.existsSync(project_name)) fs.mkdirSync(project_name);
+
+        // Create a new package.json file with the project name
+        let packageJSON = require(path.join(__dirname, './templates', template, 'package.json'));
+        packageJSON.name = project_name;
+        packageJSON.description = description;
+        packageJSON.author = author;
+        packageJSON.private = is_private;
+        fs.writeFileSync(`${project_name}/package.json`, JSON.stringify(packageJSON, null, 4));
+        fs.copyFileSync(path.join(__dirname, './templates', template, 'template.gitignore'), `${project_name}/.gitignore`);
+        fs.copyFileSync(path.join(__dirname, './templates', template, '.env.template'), `${project_name}/.env`);
+
+        for (const file of fs.readdirSync(path.join(__dirname, './templates', template))) {
+            if (file === 'package.json' || file === 'template.gitignore') continue;
+            copy(path.join(__dirname, './templates', template, file), `${project_name}/${file}`);
+        }
+
+        console.log(chalk.green('Project created successfully!'));
+    })
+    .catch((error) => {
+        if (error.isTtyError) {
+            console.error('Prompt couldn\'t be rendered in the current environment');
+        } else {
+            console.error(error);
         }
     });
-}
-
-function postProcess(options: CliOptions) {
-    const isNode = fs.existsSync(path.join(options.templatePath, 'package.json'));
-    if (isNode) {
-        shell.cd(options.tartgetPath);
-        const result = shell.exec('npm install');
-        if (result.code !== 0) {
-            console.log(chalk.redBright('Failed'));
-            return false;
-        }
-    }
-
-    if (isUpdate) {
-        console.log(chalk.greenBright('Project successfully updated'));
-    } else {
-        console.log(chalk.greenBright('Project successfully created'));
-    }
-
-    return true;
-}
