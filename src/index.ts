@@ -8,18 +8,20 @@ import { render } from './utils/template';
 import shell from 'shelljs';
 
 const CHOICES = fs.readdirSync(path.join(__dirname, 'templates'));
+
 const QUESTIONS = [
+    {
+        name: 'name',
+        type: 'input',
+        message: 'Please input a new project name:'
+    },
     {
         name: 'template',
         type: 'list',
         message: 'What template would you like to use?',
         choices: CHOICES
     },
-    {
-        name: 'name',
-        type: 'input',
-        message: 'Please input a new project name:'
-    }];
+];
 
 export interface CliOptions {
     projectName: string
@@ -43,7 +45,7 @@ inquirer.prompt(QUESTIONS).then(answers => {
     const tartgetPath = path.join(CURR_DIR, projectName);
 
     options = {
-        //@ts-ignore
+        // @ts-ignore
         projectName,
         //@ts-ignore
         templateName: projectChoice,

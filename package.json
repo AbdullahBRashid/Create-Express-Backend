@@ -1,5 +1,5 @@
 {
-	"name": "@abdullabrashid/create-express-backend",
+	"name": "@abdullahbrashid/create-express-backend",
 	"version": "0.1.0",
 	"keywords": [
 		"create",
@@ -26,7 +26,7 @@
 		"url": "https://github.com/AbdullahBRashid"
 	},
 	"files": [
-		"src"
+		"src", "tsconfig.json"
 	],
 	"dependencies": {
 		"ejs": "^3.1.9",
