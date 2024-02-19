@@ -24,7 +24,7 @@ inquirer
         {
             type: 'input',
             name: 'project_name',
-            message: "What's your project named?",
+            message: "What will be the name of the project?",
             default: function () {
                 return 'my-backend'
             },
@@ -82,8 +82,10 @@ inquirer
 
         // Create a new package.json file with the project name
         let packageJSON = require(path.join(__dirname, '../templates', template, 'package.json'));
-        packageJSON.name = project_name;
+        if (project_name === ".") packageJSON.name = path.basename(shell.pwd().stdout.toLowerCase());
+        else packageJSON.name = project_name.toLowerCase();
         packageJSON.description = description;
+        packageJSON.version = '0.1.0';
         packageJSON.author = author;
         packageJSON.private = is_private;
         fs.writeFileSync(`${project_name}/package.json`, JSON.stringify(packageJSON, null, 4));
