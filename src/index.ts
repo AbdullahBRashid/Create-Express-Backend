@@ -6,7 +6,7 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import shell from 'shelljs';
 
-const templates = fs.readdirSync(path.join(__dirname, './templates'));
+const templates = fs.readdirSync(path.join(__dirname, '../templates'));
 
 function copy(src: string, dest: string) {
     if (fs.lstatSync(src).isDirectory()) {
@@ -81,18 +81,18 @@ inquirer
         if (!fs.existsSync(project_name)) fs.mkdirSync(project_name);
 
         // Create a new package.json file with the project name
-        let packageJSON = require(path.join(__dirname, './templates', template, 'package.json'));
+        let packageJSON = require(path.join(__dirname, '../templates', template, 'package.json'));
         packageJSON.name = project_name;
         packageJSON.description = description;
         packageJSON.author = author;
         packageJSON.private = is_private;
         fs.writeFileSync(`${project_name}/package.json`, JSON.stringify(packageJSON, null, 4));
-        fs.copyFileSync(path.join(__dirname, './templates', template, 'template.gitignore'), `${project_name}/.gitignore`);
-        fs.copyFileSync(path.join(__dirname, './templates', template, '.env.template'), `${project_name}/.env`);
+        fs.copyFileSync(path.join(__dirname, '../templates', template, 'template.gitignore'), `${project_name}/.gitignore`);
+        fs.copyFileSync(path.join(__dirname, '../templates', template, '.env.template'), `${project_name}/.env`);
 
-        for (const file of fs.readdirSync(path.join(__dirname, './templates', template))) {
+        for (const file of fs.readdirSync(path.join(__dirname, '../templates', template))) {
             if (file === 'package.json' || file === 'template.gitignore') continue;
-            copy(path.join(__dirname, './templates', template, file), `${project_name}/${file}`);
+            copy(path.join(__dirname, '../templates', template, file), `${project_name}/${file}`);
         }
 
         console.log(chalk.green('Project created successfully!'));
