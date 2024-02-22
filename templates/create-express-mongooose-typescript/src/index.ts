@@ -5,7 +5,8 @@ import { config } from 'dotenv'
 config()
 
 // Routes Import
-import { authRouter } from './Auth/auth.routes';
+import appRouter from './routes';
+import authRouter from './Auth/auth.routes';
 
 // DB
 connect(process.env.MONGO_URL as string)
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
 })
 
 // Routes
+app.use('/', appRouter);
 app.use('/api/auth', authRouter)
 
 // Listen

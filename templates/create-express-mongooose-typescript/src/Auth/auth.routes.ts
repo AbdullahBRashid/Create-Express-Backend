@@ -20,4 +20,4 @@ router.post('/login', loginValidator, validate, login);
 router.post('/pre-register', preRegisterValidator, validate, preRegister);
 router.post('/register', registerValidator, validate, register);
 
-export { router as authRouter }
+export default router;
