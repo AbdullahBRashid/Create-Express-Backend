@@ -62,19 +62,13 @@ inquirer
             }
         },
         {
-            type: 'confirm',
-            name: 'is_private',
-            message: 'Is this project private?',
-            default: false
-        },
-        {
             type: 'list',
             name: 'template',
             message: 'What Template do you want to use?',
             choices: templates
         }
     ])
-    .then(({ project_name, description, author, is_private, template }: { project_name: string, description: string, author: string, is_private: boolean, template: string }) => {
+    .then(({ project_name, description, author, template }: { project_name: string, description: string, author: string, template: string }) => {
         console.log(`Creating a new Backend Project in ${project_name}`);
 
         // Make a new directory with the project name if not already exists
@@ -87,7 +81,6 @@ inquirer
         packageJSON.description = description;
         packageJSON.version = '0.1.0';
         packageJSON.author = author;
-        packageJSON.private = is_private;
         fs.writeFileSync(`${project_name}/package.json`, JSON.stringify(packageJSON, null, 4));
         fs.copyFileSync(path.join(__dirname, '../templates', template, 'template.gitignore'), `${project_name}/.gitignore`);
         fs.copyFileSync(path.join(__dirname, '../templates', template, '.env.template'), `${project_name}/.env`);
@@ -96,6 +89,8 @@ inquirer
             if (file === 'package.json' || file === 'template.gitignore') continue;
             copy(path.join(__dirname, '../templates', template, file), `${project_name}/${file}`);
         }
+
+        shell.exec(`cd ${project_name} && npm install`);
 
         console.log(chalk.green('Project created successfully!'));
     })
