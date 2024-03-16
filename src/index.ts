@@ -19,6 +19,12 @@ function copy(src: string, dest: string) {
     }
 }
 
+let project_name = "my-backend";
+
+if (process.argv.length > 2) {
+    project_name = process.argv[2];
+}
+
 inquirer
     .prompt([
         {
@@ -26,7 +32,7 @@ inquirer
             name: 'project_name',
             message: "What will be the name of the project?",
             default: function () {
-                return 'my-backend'
+                return project_name;
             },
             validate: function (value) {
                 // Current directory check
