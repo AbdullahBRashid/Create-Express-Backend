@@ -12,7 +12,7 @@ import {
     preRegisterValidator,
 } from "./auth.validator";
 
-import { validate } from '../common/validate'
+import { validate } from '../middleware/validate'
 
 const router = Router();
 
