@@ -30,7 +30,8 @@
 	},
 	"files": [
 		"src",
-		"tsconfig.json"
+		"tsconfig.json",
+		"templates"
 	],
 	"dependencies": {
 		"inquirer": "^8.2.6",
