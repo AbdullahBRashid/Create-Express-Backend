@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import crypto from "crypto";
 
-const userSchema = new mongoose.Schema(
+const UserSchema = new mongoose.Schema(
     {
         username: {
             type: String,
@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema(
     }
 )
 
-userSchema.methods = {
+UserSchema.methods = {
     encryptPassword: function (password: string) {
         if (!password) return ''
         try {
@@ -73,11 +73,11 @@ userSchema.methods = {
     }
 }
 
-userSchema.virtual('password')
+UserSchema.virtual('password')
     .set(function (this: mongoose.AnyObject, password: string) {
         this._password = password
         this.salt = this.makeSalt()
         this.hashed_password = this.encryptPassword(password)
     })
 
-export default mongoose.model('User', userSchema)
+export default mongoose.model('User', UserSchema)
