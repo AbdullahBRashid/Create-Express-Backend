@@ -1,6 +1,6 @@
 {
 	"name": "@abdullahbrashid/create-express-backend",
-	"version": "0.4.0",
+	"version": "0.4.1",
 	"keywords": [
 		"create",
 		"express",
@@ -21,7 +21,7 @@
 	"license": "MIT",
 	"scripts": {
 		"start": "node .",
-		"build": "tsc"
+		"build": "tsc -p ."
 	},
 	"author": {
 		"name": "Abdullah Bin Rashid",
@@ -29,9 +29,8 @@
 		"url": "https://github.com/AbdullahBRashid"
 	},
 	"files": [
-		"src",
-		"tsconfig.json",
-		"templates"
+		"templates",
+		"dist"
 	],
 	"dependencies": {
 		"inquirer": "^8.2.6",
