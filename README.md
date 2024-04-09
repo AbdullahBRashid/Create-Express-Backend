@@ -11,6 +11,9 @@
 ## Templates
 - `create-express-mongoose-typescript` = Express + Typescript + Mongoose + JWTs
 
+## Using your own Templates
+Read [FORK.md](https://github.com/AbdullahBRashid/Create-Express-Backend/blob/main/FORK.md) to use your own templates in the project.
+
 ## Contribution
 Contributions are beyond welcome. Please create an issue at [#issues](https://github.com/AbdullahBRashid/Create-Express-Backend/issues) or create a pull request after forking.
 
