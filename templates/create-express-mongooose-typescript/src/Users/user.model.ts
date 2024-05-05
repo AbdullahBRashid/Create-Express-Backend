@@ -39,10 +39,6 @@ const UserSchema = new mongoose.Schema(
             enum: ['user', 'admin'],
             default: 'user'
         },
-        about: {
-            type: String,
-            trim: true,
-        },
         photo: {
             data: Buffer,
             contentType: String,
