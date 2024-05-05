@@ -16,15 +16,14 @@ export async function authentiateToken(req: Request, res: Response, next: Functi
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as any;
-        User.findById(decoded._id).then((user: any) => {
-            if (!user) {
-                return res.status(400).json({
-                    message: 'User not found'
-                })
-            }
-            req.user = decoded
-            next()
-        })
+        let user = await User.findById(decoded._id)
+        if (!user) {
+            return res.status(400).json({
+                message: 'User not found'
+            })
+        }
+        req.user = user
+        next()
     } catch (error) {
         return res.status(400).json({
             message: 'Invalid token'
